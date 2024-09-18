@@ -1,20 +1,25 @@
 #ifndef POTENTIAL_FIELD_H
 #define POTENTIAL_FIELD_H
 
-class PotentialField {
-   private:
-    double ***grid;
+class PotentialField
+{
+private:
     int width, height;
+    double ***grid;
     double K;
 
-   public:
+public:
     // constructor
-    PotentialField(int w, int h);
+    PotentialField();
 
     // destructor;
     ~PotentialField();
 
-        void addPoint(char type, int x, int y);
+    void deleteGrid();
+
+    void create(int w, int h);
+
+    void addPoint(char type, int x, int y);
 
     double getPotential(int x, int y);
 
