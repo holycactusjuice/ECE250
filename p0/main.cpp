@@ -1,8 +1,10 @@
-#include <iostream>
-
 #include "PotentialField.h"
 
+#include <iostream>
+
+// enum to allow switch case using input strings
 enum command { eCreate, ePoint, eMove, eClear, eUpdate, eExit };
+// converts input command strings to command type
 command hashit(std::string c) {
     if (c == "CREATE") return eCreate;
     if (c == "POINT") return ePoint;
@@ -20,6 +22,7 @@ int main() {
     // instantiate PotentialField object
     PotentialField pf;
 
+    // keep program running until EXIT is reached
     while (hashit(command) != eExit) {
         switch (hashit(command)) {
             case eCreate: {
@@ -38,8 +41,8 @@ int main() {
                 std::cin >> type;
                 std::cin >> x;
                 std::cin >> y;
-
-                pf.addPoint(type, x, y);
+                // add point
+                pf.point(type, x, y);
             } break;
 
             case eMove: {
@@ -47,11 +50,12 @@ int main() {
                 int x, y;
                 std::cin >> x;
                 std::cin >> y;
-
+                // print potential
                 pf.move(x, y);
             } break;
 
             case eClear: {
+                // clear grid
                 pf.clear();
             } break;
 
@@ -59,8 +63,8 @@ int main() {
                 // get inputs
                 double newK;
                 std::cin >> newK;
-
-                pf.updateK(newK);
+                // update value of K
+                pf.update(newK);
             } break;
         }
 
