@@ -1,0 +1,22 @@
+success
+failure
+core 0 assigned task 1
+core 1 assigned task 2
+core 0 assigned task 3
+core 0 is running task 1
+core 0 is running task 3
+failure
+failure
+core 1 assigned task 10
+core 0 assigned task 20
+core 1 assigned task 30
+core 0 assigned task 40
+core 1 assigned task 50
+core 0 assigned task 60
+task 60 assigned to core 1 task 40 assigned to core 1 task 20 assigned to core 1 task 2 assigned to core 1 
+core 0 has no tasks to assign
+task 2 assigned to core 0 task 20 assigned to core 0 task 40 assigned to core 0 task 60 assigned to core 0 task 50 assigned to core 0 task 30 assigned to core 0 task 10 assigned to core 0 
+core 0 is running task 2
+core 0 is running task 20
+core 1 has no tasks to run
+deleting task 40 from core 0 deleting task 60 from core 0 deleting task 50 from core 0 deleting task 30 from core 0 deleting task 10 from core 1 
