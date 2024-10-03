@@ -64,7 +64,7 @@ std::string CPU::on(int n) {
     // create new core
     // this already allocates memory for Deque objects
     // so we don't need to do anything else
-    cores = new Deque[n];
+    cores = new Deque[coreCount];
     return "success";
 }
 

@@ -16,7 +16,6 @@ class Deque {
    public:
     Deque();
     ~Deque();
-    void pushFront(int val);
     void pushBack(int val);
     int popFront();
     int popBack();
