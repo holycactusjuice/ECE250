@@ -151,7 +151,7 @@ std::string CPU::size(int coreId) {
         return "failure";
     }
     // get the size of the core's queue
-    return std::to_string(cores[coreId].getSize());
+    return "size is " + std::to_string(cores[coreId].getSize());
 }
 
 std::string CPU::capacity(int coreId) {
@@ -160,5 +160,5 @@ std::string CPU::capacity(int coreId) {
         return "failure";
     }
     // get the capacity of the core's queue
-    return std::to_string(cores[coreId].getCapacity());
+    return "capacity is " + std::to_string(cores[coreId].getCapacity());
 }
