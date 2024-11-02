@@ -4,24 +4,24 @@
 #include <string>
 #include <vector>
 
+#include "HashNode.h"
+
 class HashTable {
-   private:
-    int hashType;
+   protected:
     int size;
+    std::vector<HashNode> map;
+
     int hash1(int k);
-    int hash2(int k);
-    std::vector<std::string> map;
 
    public:
     HashTable();
-    ~HashTable();
-    std::string newTable(int size, int hashType);
-    std::string store(int id, std::string charstring);
-    std::string search(int id);
-    std::string deleteKey(int id);
-    std::string corrupt(int id, std::string charstring);
-    std::string validate(int id);
-    std::string print(int i);
+    std::string newTable(int size);
+    virtual std::string store(unsigned int id, std::string charstring) = 0;
+    virtual std::string search(unsigned int id) = 0;
+    virtual std::string deleteKey(unsigned int id) = 0;
+    virtual std::string corrupt(unsigned int id, std::string charstring) = 0;
+    virtual std::string validate(unsigned int id) = 0;
+    virtual std::string print(int i) = 0;
 };
 
 #endif

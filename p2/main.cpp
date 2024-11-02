@@ -1,6 +1,10 @@
 #include <iostream>
+#include <limits>
+#include <string>
 
-#include "hashtable.h"
+#include "HashTable.h"
+#include "OpenAddressingHashTable.h"
+#include "SeparateChainingHashTable.h"
 
 // enum to allow switch case using input strings
 enum command {
@@ -31,7 +35,10 @@ int main() {
     std::cin >> command;
 
     // instantiate PotentialField object
-    HashTable ht;
+    OpenAddressingHashTable oaht;
+    SeparateChainingHashTable scht;
+
+    HashTable* ht;
 
     // keep program running until EXIT is reached
     while (hashit(command) != eExit) {
@@ -41,47 +48,82 @@ int main() {
                 int hashType;
                 std::cin >> size;
                 std::cin >> hashType;
-                ht.newTable(size, hashType);
+
+                if (hashType == 0) {
+                    ht = &oaht;
+                } else {
+                    ht = &scht;
+                }
+
+                std::string result = ht->newTable(size);
+                std::cout << result << std::endl;
+
                 break;
             }
             case eStore: {
                 int id;
                 std::string charstring;
                 std::cin >> id;
-                std::cin >> charstring;
-                ht.store(id, charstring);
+
+                // clear the newline and get the rest of the string
+                std::cin.ignore();
+
+                std::getline(std::cin, charstring);
+
+                std::string result = ht->store(id, charstring);
+                std::cout << result << std::endl;
+
                 break;
             }
             case eSearch: {
                 int id;
                 std::cin >> id;
-                ht.search(id);
+
+                std::string result = ht->search(id);
+                std::cout << result << std::endl;
+
                 break;
             }
             case eDelete: {
                 int id;
                 std::cin >> id;
-                ht.deleteKey(id);
+
+                std::string result = ht->deleteKey(id);
+                std::cout << result << std::endl;
+
                 break;
             }
             case eCorrupt: {
                 int id;
                 std::string charstring;
                 std::cin >> id;
-                std::cin >> charstring;
-                ht.corrupt(id, charstring);
+
+                // clear the newline and get the rest of the string
+                std::cin.ignore();
+
+                std::getline(std::cin, charstring);
+
+                std::string result = ht->corrupt(id, charstring);
+                std::cout << result << std::endl;
+
                 break;
             }
             case eValidate: {
                 int id;
                 std::cin >> id;
-                ht.validate(id);
+
+                std::string result = ht->validate(id);
+                std::cout << result << std::endl;
+
                 break;
             }
             case ePrint: {
                 int i;
                 std::cin >> i;
-                ht.print(i);
+
+                std::string result = ht->print(i);
+                std::cout << result << std::endl;
+
                 break;
             }
         }

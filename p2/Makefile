@@ -1,0 +1,2 @@
+all: main.cpp HashNode.cpp HashTable.cpp OpenAddressingHashTable.cpp SeparateChainingHashTable.cpp
+	g++ -g -std=c++11 main.cpp HashNode.cpp HashTable.cpp OpenAddressingHashTable.cpp SeparateChainingHashTable.cpp
