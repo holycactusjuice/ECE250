@@ -1,5 +1,6 @@
 #include "OpenAddressingHashTable.h"
 
+#include <iostream>
 #include <string>
 
 #include "HashNode.h"
@@ -44,11 +45,18 @@ int OpenAddressingHashTable::findKey(unsigned int id) {
 std::string OpenAddressingHashTable::store(unsigned int id, std::string data) {
     int hash = hash1(id);
     int offset = hash2(id);
+
+    // check if the head node has the same id as the one we are trying to insert
+    if (map[hash].get_id() == id && map[hash].get_data() != "")
+        return "failure";
     // loop while table is occupied at hash
     while (map[hash].get_data().size() > 0) {
         hash = (hash + offset) % size;
         // if we have reached the original hash value, return failure
         if (hash == hash1(id)) return "failure";
+        // if this node has the same id as the one we are trying to insert,
+        // return failure
+        if (map[hash].get_id() == id) return "failure";
     }
     // remove ! from end of string
     data.pop_back();
@@ -100,4 +108,8 @@ std::string OpenAddressingHashTable::validate(unsigned int id) {
     return isValid ? "valid" : "invalid";
 }
 
-std::string OpenAddressingHashTable::print(int i) { return ""; }
+std::string OpenAddressingHashTable::print(int i) {
+    // this function is only for debugging purposes
+    // print file at index i
+    return std::to_string(i) + ": " + map[i].get_data();
+}

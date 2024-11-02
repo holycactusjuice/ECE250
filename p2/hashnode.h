@@ -18,7 +18,7 @@ class HashNode {
     unsigned int get_id();
     int get_checksum();
     HashNode *get_next();
-    void *set_next(HashNode *next);
+    void set_next(HashNode *next);
     int calc_checksum();
     void update_checksum();
     std::string get_data();

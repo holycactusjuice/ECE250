@@ -1,5 +1,6 @@
 #include "HashNode.h"
 
+#include <iostream>
 #include <string>
 
 HashNode::HashNode() : id(0), checksum(-1), data(""), next(nullptr) {}
@@ -31,17 +32,12 @@ int HashNode::calc_checksum() {
 
 HashNode *HashNode::get_next() { return next; }
 
-void *HashNode::set_next(HashNode *next) {
-    this->next = next;
-    return this;
-}
+void HashNode::set_next(HashNode *next) { this->next = next; }
 
 void HashNode::update_checksum() { checksum = calc_checksum(); }
 
 std::string HashNode::get_data() { return data; }
 
-void HashNode::corrupt(std::string charstring) {
-    for (char &c : charstring) c = 0;
-}
+void HashNode::corrupt(std::string charstring) { data = charstring; }
 
 bool HashNode::validate() { return checksum == calc_checksum(); }
