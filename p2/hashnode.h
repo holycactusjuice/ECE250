@@ -9,6 +9,7 @@ class HashNode {
     int checksum;
     std::string data;
     HashNode *next;
+    int calc_checksum();
 
    public:
     HashNode();
@@ -19,9 +20,8 @@ class HashNode {
     int get_checksum();
     HashNode *get_next();
     void set_next(HashNode *next);
-    int calc_checksum();
-    void update_checksum();
     std::string get_data();
+    void update_checksum();
     void corrupt(std::string data);
     bool validate();
 };
