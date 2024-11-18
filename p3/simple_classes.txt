@@ -1,0 +1,24 @@
+living
+nonliving
+living,from plants
+living,from animals
+living,from plants,food
+living,from plants,not food
+living,from plants,food,fruit
+living,from plants,food,vegetable
+living,from plants,not food,houseplant
+living,from plants,not food,wild plant
+living,from animals,vertebrate
+living,from animals,invertebrate
+living,from animals,vertebrate,mammal
+living,from animals,vertebrate,fish
+living,from animals,vertebrate,bird
+living,from animals,invertebrate,insect
+living,from animals,invertebrate,single cell
+living,from animals,vertebrate,mammal,carnivore
+living,from animals,vertebrate,mammal,herbivore
+living,from animals,vertebrate,mammal,omnivore
+nonliving,natural
+nonliving,technology
+nonliving,technology,modern
+nonliving,technology,ancient
