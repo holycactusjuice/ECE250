@@ -9,24 +9,25 @@
 #include "node.h"
 
 class Trie {
-   protected:
-    Node* root;           // Root of the trie
-    int classifications;  // # of classifications, used for size
+   private:
+    Node* root;
+    int classifications;
+
+    void validateInput(std::string input);
+    bool isEmpty();
 
    public:
-    Trie();   // Constructor
-    ~Trie();  // Destructor
+    Trie();
+    ~Trie();
 
-    // Function declarations for Trie
-    void load(std::string filename);
-    void insert(std::string label, bool print_output);
-    void classify(std::string key);
-    void erase(std::string key);
-    void print();
-    void empty();
-    void size();
-    void clear();
-    void validate_input(std::string input);
+    std::string load(std::string filename);
+    std::string insert(std::string label);
+    std::string classify(std::string key);
+    std::string erase(std::string key);
+    std::string print();
+    std::string empty();
+    std::string clear();
+    std::string size();
 };
 
 #endif

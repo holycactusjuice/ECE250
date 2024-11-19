@@ -1,2 +1,2 @@
-all: main.cpp HashNode.cpp HashTable.cpp OpenAddressingHashTable.cpp SeparateChainingHashTable.cpp
-	g++ -g -std=c++11 main.cpp HashNode.cpp HashTable.cpp OpenAddressingHashTable.cpp SeparateChainingHashTable.cpp
+all: ece250_socket.cpp main.cpp Trie.cpp Node.cpp IllegalException.cpp
+	g++ -std=c++11 ece250_socket.cpp main.cpp Trie.cpp Node.cpp IllegalException.cpp

@@ -1,5 +1,4 @@
-#ifndef NODE_H
-#define NODE_H
+#include "Node.h"
 
 #include <algorithm>
 #include <iostream>
@@ -7,26 +6,30 @@
 
 class Node {
    private:
-    std::vector<Node> children;  // Children of the node
-    std::string label;           // Label of the node
-    bool isTerminal;             // Indicates if the node is a terminal node
+    std::vector<Node*> children;  // children of the node
+    std::string label;            // label of the node
 
    public:
-    std::vector<Node>& getChildren() {
-        return children;
-    }  // Get children of the node
-    std::string getLabel() { return label; }  // Get label of the node
-    void setLabel(std::string value) {
-        label = value;
-    }  // Set label of the node
-    bool getIsTerminal() { return isTerminal; }  // Get if the node is terminal
-    void setTerminal(bool value) {
-        isTerminal = value;
-    }  // Set label of the node
-    void removeChild(int index);  // Remove a child from the node
+    Node();
+    ~Node();
 
-    Node();   // Constructor
-    ~Node();  // Destructor
+    // getter and setter methods for the children
+    const std::vector<Node*>& getChildren() const { return children; }
+    void addChild(Node* child) {
+        children.push_back(child);
+    }  // Add a child to the node
+    void removeChild(int index) {
+        if (index >= 0 && index < children.size()) {
+            delete children[index];
+            children.erase(children.begin() + index);
+        }
+    }
+    // getter and setter methods for the label
+    std::string getLabel() const { return label; }
+    void setLabel(std::string value) { label = value; }
+    // method to check if the node is terminal
+    bool isTerminal() const {
+        // node is terminal if it has no children
+        return children.empty();
+    }
 };
-
-#endif

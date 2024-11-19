@@ -38,99 +38,68 @@ int main() {
     std::string command;
     std::cin >> command;
 
-    // instantiate PotentialField object
-    OpenAddressingHashTable oaht;
-    SeparateChainingHashTable scht;
-
-    HashTable* ht;
+    Trie* t = new Trie();
 
     // keep program running until EXIT is reached
     while (hashit(command) != eExit) {
+        std::string result;
         switch (hashit(command)) {
-            case eNew: {
-                int size;
-                int hashType;
-                std::cin >> size;
-                std::cin >> hashType;
+            case eLoad: {
+                std::string filename;
+                std::cin >> filename;
 
-                if (hashType == 0) {
-                    ht = &oaht;
-                } else {
-                    ht = &scht;
-                }
-
-                std::string result = ht->newTable(size);
-                std::cout << result << std::endl;
+                result = t->load(filename);
 
                 break;
             }
-            case eStore: {
-                int id;
-                std::string charstring;
-                std::cin >> id;
-
-                // clear the newline and get the rest of the string
+            case eInsert: {
+                std::string classification;
                 std::cin.ignore();
-
-                std::getline(std::cin, charstring);
-
-                std::string result = ht->store(id, charstring);
-                std::cout << result << std::endl;
+                std::getline(std::cin, classification);
+                result = t->insert(classification);
 
                 break;
             }
-            case eSearch: {
-                int id;
-                std::cin >> id;
-
-                std::string result = ht->search(id);
-                std::cout << result << std::endl;
-
-                break;
-            }
-            case eDelete: {
-                int id;
-                std::cin >> id;
-
-                std::string result = ht->deleteKey(id);
-                std::cout << result << std::endl;
-
-                break;
-            }
-            case eCorrupt: {
-                int id;
-                std::string charstring;
-                std::cin >> id;
-
-                // clear the newline and get the rest of the string
+            case eClassify: {
+                std::string input;
                 std::cin.ignore();
+                std::getline(std::cin, input);
 
-                std::getline(std::cin, charstring);
-
-                std::string result = ht->corrupt(id, charstring);
-                std::cout << result << std::endl;
+                result = t->classify(input);
 
                 break;
             }
-            case eValidate: {
-                int id;
-                std::cin >> id;
+            case eErase: {
+                std::string classification;
+                std::cin.ignore();
+                std::getline(std::cin, classification);
 
-                std::string result = ht->validate(id);
-                std::cout << result << std::endl;
+                result = t->erase(classification);
 
                 break;
             }
             case ePrint: {
-                int i;
-                std::cin >> i;
+                result = t->print();
 
-                std::string result = ht->print(i);
-                std::cout << result << std::endl;
+                break;
+            }
+            case eEmpty: {
+                result = t->empty();
+
+                break;
+            }
+            case eClear: {
+                result = t->clear();
+
+                break;
+            }
+            case eSize: {
+                result = t->size();
 
                 break;
             }
         }
+        std::cout << result << std::endl;
 
         // get next command
         std::cin >> command;
