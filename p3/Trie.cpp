@@ -73,11 +73,15 @@ std::string Trie::insert(std::string classification) {
         }
     }
 
-    if (!newNodeCreated && curr->isTerminal() || !curr->getChildren().empty()) {
-        return "failure";
+    if (newNodeCreated) {
+        classifications++;
+    } else if (!curr->isTerminal()) {
+        classifications++;
     }
 
-    if (!curr->isTerminal()) classifications++;
+    if (!newNodeCreated && curr->isTerminal()) {
+        return "failure";
+    }
 
     return "success";
 }
@@ -163,15 +167,15 @@ std::string Trie::erase(std::string classification) {
     if (!curr->getChildren().empty() || !curr->isTerminal()) return "failure";
 
     Node* parent = path[path.size() - 2];
-    parent->removeChild(childIndex.back());
+    int lastIndex = childIndex.back();
+
+    parent->removeChild(lastIndex);
     classifications--;
 
-    for (int i = path.size() - 2; i > 0; --i) {
+    for (int i = path.size() - 2; i > 0; i--) {
         Node* node = path[i];
         if (node->getChildren().empty() && !node->isTerminal()) {
-            Node* parent = path[i - 1];
-            parent->removeChild(childIndex[i - 1]);
-        } else {
+            classifications++;
             break;
         }
     }
@@ -203,15 +207,17 @@ std::string Trie::print() {
         }
 
         const auto& children = curr->getChildren();
-        for (const auto& child : children) {
-            nodeStack.push(child);
+        // Reverse the children to ensure the correct order
+        for (auto it = children.rbegin(); it != children.rend(); ++it) {
+            nodeStack.push(*it);
 
             std::vector<std::string> newPath = path;
-            newPath.push_back(child->getLabel());
+            newPath.push_back((*it)->getLabel());
             pathStack.push(newPath);
         }
     }
-    result += "_";
+    if (result.back() != '_') result += "_";
+
     return result;
 }
 
@@ -220,7 +226,7 @@ std::string Trie::empty() {
 }
 
 std::string Trie::clear() {
-    delete root;
+    if (root) delete root;  // Ensure the previous trie is deleted
     root = new Node();
     classifications = 0;
     return "success";
