@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stack>
 #include <string>
 #include <vector>
 
@@ -50,28 +51,29 @@ std::string Trie::insert(std::string classification) {
     }
 
     Node* curr = root;
-    bool createdNode = false;
+    bool newNodeCreated = false;
 
     for (const std::string& label : labels) {
-        bool exists = false;
-
-        for (Node* child : curr->getChildren()) {
-            if (child->getLabel() == label) {
-                curr = child;
-                exists = true;
+        Node* child = nullptr;
+        for (Node* existingChild : curr->getChildren()) {
+            if (existingChild->getLabel() == label) {
+                child = existingChild;
                 break;
             }
         }
-        if (!exists) {
+
+        if (child) {
+            curr = child;
+        } else {
             Node* newNode = new Node();
             newNode->setLabel(label);
             curr->addChild(newNode);
             curr = newNode;
-            createdNode = true;
+            newNodeCreated = true;
         }
     }
 
-    if (!createdNode && curr->isTerminal() || !curr->getChildren().empty()) {
+    if (!newNodeCreated && curr->isTerminal() || !curr->getChildren().empty()) {
         return "failure";
     }
 
@@ -161,23 +163,21 @@ std::string Trie::erase(std::string classification) {
     if (!curr->getChildren().empty() || !curr->isTerminal()) return "failure";
 
     Node* parent = path[path.size() - 2];
-    int lastIndex = childIndex.back();
-
-    parent->removeChild(lastIndex);
+    parent->removeChild(childIndex.back());
     classifications--;
 
-    for (int i = path.size() - 2; i > 0; i--) {
+    for (int i = path.size() - 2; i > 0; --i) {
         Node* node = path[i];
         if (node->getChildren().empty() && !node->isTerminal()) {
-            classifications++;
+            Node* parent = path[i - 1];
+            parent->removeChild(childIndex[i - 1]);
+        } else {
             break;
         }
     }
 
     return "success";
 }
-
-#include <stack>
 
 std::string Trie::print() {
     if (isEmpty()) return "trie is empty";
@@ -188,30 +188,26 @@ std::string Trie::print() {
     std::stack<std::vector<std::string>> pathStack;
     pathStack.push({});
 
-    std::string result = "";
+    std::string result;
 
     while (!nodeStack.empty()) {
         Node* curr = nodeStack.top();
         nodeStack.pop();
 
-        std::vector<std::string> path = pathStack.top();
+        std::vector<std::string> path = std::move(pathStack.top());
         pathStack.pop();
 
         if (curr->isTerminal()) {
-            if (result != "") result += "_";
-
-            for (int i = 0; i < path.size(); i++) {
-                result += path[i];
-                if (i != path.size() - 1) result += ",";
-            }
+            if (!result.empty()) result += "_";
+            result += joinPath(path);
         }
 
         const auto& children = curr->getChildren();
-        for (auto it = children.rbegin(); it != children.rend(); ++it) {
-            nodeStack.push(*it);
+        for (const auto& child : children) {
+            nodeStack.push(child);
 
             std::vector<std::string> newPath = path;
-            newPath.push_back((*it)->getLabel());
+            newPath.push_back(child->getLabel());
             pathStack.push(newPath);
         }
     }
@@ -235,3 +231,12 @@ std::string Trie::size() {
 }
 
 bool Trie::isEmpty() { return classifications == 0; }
+
+std::string Trie::joinPath(const std::vector<std::string>& path) {
+    std::string joined;
+    for (size_t i = 0; i < path.size(); ++i) {
+        joined += path[i];
+        if (i != path.size() - 1) joined += ",";
+    }
+    return joined;
+}

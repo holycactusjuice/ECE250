@@ -1,0 +1,10 @@
+INSERT living
+PRINT
+INSERT living,mammal
+PRINT
+INSERT nonliving
+PRINT
+ERASE living,mammal
+PRINT
+EXIT
+

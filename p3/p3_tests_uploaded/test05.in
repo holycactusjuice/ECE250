@@ -1,0 +1,6 @@
+INSERT living
+INSERT living,mammal
+CLASSIFY dog
+ERASE living,mammal
+CLASSIFY dog
+EXIT

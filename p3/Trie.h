@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "node.h"
+#include "Node.h"
 
 class Trie {
    private:
@@ -15,6 +15,7 @@ class Trie {
 
     void validateInput(std::string input);
     bool isEmpty();
+    std::string joinPath(const std::vector<std::string>& path);
 
    public:
     Trie();
