@@ -100,8 +100,8 @@ std::string Graph::relationship(std::string sourceId, std::string label,
 
     // add relationship to both source and destination
     // addRelationship updates relationship if it already exists
-    sourceNode->addRelationship(destinationId, label, weight);
-    destinationNode->addRelationship(sourceId, label, weight);
+    sourceNode->addRelationship(destinationNode, label, weight);
+    destinationNode->addRelationship(sourceNode, label, weight);
 
     return "success";
 }
@@ -146,7 +146,7 @@ std::string Graph::print(std::string id) {
     std::string result = "";
     for (const auto &relationship : relationships) {
         // add id to result
-        result += std::get<0>(relationship) + " ";
+        result += std::get<0>(relationship)->getId() + " ";
     }
     // remove trailing space
     if (!result.empty()) {
@@ -177,9 +177,7 @@ std::string Graph::deleteNode(std::string id) {
     // we need to remove this node from all its neighbours' relationships vector
     for (const auto &relationship : relationships) {
         // get the neighbour node id of this relationship
-        auto neighbourId = std::get<0>(relationship);
-        // find the neighbour node
-        Node *neighbourNode = findNode(neighbourId);
+        Node *neighbourNode = std::get<0>(relationship);
         // remove this node from the neighbour's relationships vector
         neighbourNode->removeRelationship(id);
     }

@@ -10,8 +10,8 @@ class Node {
     std::string id;
     std::string name;
     std::string type;
-    std::vector<std::tuple<std::string, std::string, double>>
-        relationships;  // each edge is {id, label, weight}
+    std::vector<std::tuple<Node*, std::string, double>>
+        relationships;  // each edge is {node, label, weight}
 
     bool relationshipExists(std::string destinationId);
 
@@ -23,9 +23,8 @@ class Node {
     void setName(std::string name);
     void setType(std::string type);
 
-    std::vector<std::tuple<std::string, std::string, double>>
-    getRelationships();
-    void addRelationship(std::string destinationId, std::string label,
+    std::vector<std::tuple<Node*, std::string, double>> getRelationships();
+    void addRelationship(Node* destinationNode, std::string label,
                          double weight);
     void updateRelationship(std::string destinationId, std::string label,
                             double weight);

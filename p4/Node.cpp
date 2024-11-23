@@ -18,31 +18,30 @@ void Node::setName(std::string name) { this->name = name; }
 
 void Node::setType(std::string type) { this->type = type; }
 
-std::vector<std::tuple<std::string, std::string, double>>
-Node::getRelationships() {
+std::vector<std::tuple<Node *, std::string, double>> Node::getRelationships() {
     return this->relationships;
 }
 
 bool Node::relationshipExists(std::string destinationId) {
     // check if relationship with destination already exists
-    for (std::tuple<std::string, std::string, double> &relationship :
+    for (std::tuple<Node *, std::string, double> &relationship :
          this->relationships) {
         // if destination id found, return true
-        if (std::get<0>(relationship) == destinationId) {
+        if (std::get<0>(relationship)->getId() == destinationId) {
             return true;
         }
     }
     return false;
 }
 
-void Node::addRelationship(std::string destinationId, std::string label,
+void Node::addRelationship(Node *destinationNode, std::string label,
                            double weight) {
     bool exists = false;
     // check if relationship with destination already exists
-    for (std::tuple<std::string, std::string, double> &relationship :
+    for (std::tuple<Node *, std::string, double> &relationship :
          this->relationships) {
         // if destination id found, return
-        if (std::get<0>(relationship) == destinationId) {
+        if (std::get<0>(relationship)->getId() == destinationNode->getId()) {
             std::get<1>(relationship) = label;
             std::get<2>(relationship) = weight;
             exists = true;
@@ -50,7 +49,7 @@ void Node::addRelationship(std::string destinationId, std::string label,
     }
     if (!exists) {
         this->relationships.push_back(
-            std::make_tuple(destinationId, label, weight));
+            std::make_tuple(destinationNode, label, weight));
     }
 }
 
