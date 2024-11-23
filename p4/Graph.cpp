@@ -184,6 +184,12 @@ std::string Graph::deleteNode(std::string id) {
         neighbourNode->removeRelationship(id);
     }
 
+    // remove node
+    nodes.erase(
+        std::remove_if(nodes.begin(), nodes.end(),
+                       [&id](Node &node) { return node.getId() == id; }),
+        nodes.end());
+
     return "success";
 }
 

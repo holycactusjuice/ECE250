@@ -13,6 +13,8 @@ class Node {
     std::vector<std::tuple<std::string, std::string, double>>
         relationships;  // each edge is {id, label, weight}
 
+    bool relationshipExists(std::string destinationId);
+
    public:
     Node(std::string id, std::string name, std::string type);
     std::string getId();

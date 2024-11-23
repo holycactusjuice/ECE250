@@ -23,6 +23,18 @@ Node::getRelationships() {
     return this->relationships;
 }
 
+bool Node::relationshipExists(std::string destinationId) {
+    // check if relationship with destination already exists
+    for (std::tuple<std::string, std::string, double> &relationship :
+         this->relationships) {
+        // if destination id found, return true
+        if (std::get<0>(relationship) == destinationId) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Node::addRelationship(std::string destinationId, std::string label,
                            double weight) {
     bool exists = false;
@@ -46,9 +58,12 @@ void Node::removeRelationship(std::string destinationId) {
     // remove relationship with destination id
     this->relationships.erase(
         std::remove_if(
+            // search through relationships vector
             this->relationships.begin(), this->relationships.end(),
-            [destinationId](
-                std::tuple<std::string, std::string, double> relationship) {
+            // lambda function with destinationId as input
+            [&destinationId](
+                std::tuple<std::string, std::string, double> &relationship) {
+                // return true if destinationId found
                 return std::get<0>(relationship) == destinationId;
             }),
         this->relationships.end());

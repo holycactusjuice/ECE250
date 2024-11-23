@@ -120,6 +120,8 @@ int main() {
 
                 break;
             }
+            default:
+                break;
         }
         std::cout << result << std::endl;
 
