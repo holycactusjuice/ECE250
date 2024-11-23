@@ -14,10 +14,23 @@ Graph::Graph() : nodes({}) {}
 
 void Graph::validateInput(std::string input) {
     for (char c : input) {
-        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-            (c >= '0' && c <= '9'))
+        if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+              (c >= '0' && c <= '9')))
             throw IllegalException();
     }
+}
+
+Node *Graph::findNode(std::string id) {
+    // find node with id
+    auto it = std::find_if(nodes.begin(), nodes.end(),
+                           [&id](Node &node) { return node.getId() == id; });
+
+    // if node not found, return nullptr
+    if (it == nodes.end()) {
+        return nullptr;
+    }
+
+    return &(*it);
 }
 
 std::string Graph::load(std::string filename, std::string type) {
@@ -119,16 +132,15 @@ std::string Graph::print(std::string id) {
         return "illegal argument";
     }
     // find node with id
-    auto it = std::find_if(nodes.begin(), nodes.end(),
-                           [&id](Node &node) { return node.getId() == id; });
+    Node *targetNode = findNode(id);
 
     // if node not found, return failure
-    if (it == nodes.end()) {
+    if (targetNode == nullptr) {
         return "failure";
     }
 
     // get relationships of node
-    auto relationships = it->getRelationships();
+    auto relationships = targetNode->getRelationships();
 
     // print relationships
     std::string result = "";
@@ -140,8 +152,6 @@ std::string Graph::print(std::string id) {
     if (!result.empty()) {
         result.pop_back();
     }
-    // add newline
-    result += "\n";
 
     return result;
 }
@@ -154,14 +164,49 @@ std::string Graph::deleteNode(std::string id) {
     }
 
     // find node with id
-    auto it = std::find_if(nodes.begin(), nodes.end(),
-                           [&id](Node &node) { return node.getId() == id; });
+    Node *targetNode = findNode(id);
 
     // if node not found, return failure
-    if (it == nodes.end()) {
+    if (targetNode == nullptr) {
         return "failure";
     }
 
     // get relationships of node
-    auto relationships = it->getRelationships();
+    auto relationships = targetNode->getRelationships();
+
+    // we need to remove this node from all its neighbours' relationships vector
+    for (const auto &relationship : relationships) {
+        // get the neighbour node id of this relationship
+        auto neighbourId = std::get<0>(relationship);
+        // find the neighbour node
+        Node *neighbourNode = findNode(neighbourId);
+        // remove this node from the neighbour's relationships vector
+        neighbourNode->removeRelationship(id);
+    }
+
+    return "success";
 }
+
+std::string Graph::path(std::string id1, std::string id2) {
+    try {
+        validateInput(id1);
+        validateInput(id2);
+    } catch (IllegalException &e) {
+        return "illegal argument";
+    }
+
+    return "success";
+}
+
+std::string Graph::findAll(std::string fieldType, std::string fieldString) {
+    try {
+        validateInput(fieldType);
+        validateInput(fieldString);
+    } catch (IllegalException &e) {
+        return "illegal argument";
+    }
+
+    return "success";
+}
+
+std::string Graph::highest() { return "success"; }

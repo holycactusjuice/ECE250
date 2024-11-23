@@ -10,7 +10,8 @@ class Node {
     std::string id;
     std::string name;
     std::string type;
-    std::vector<std::tuple<std::string, std::string, double>> relationships;
+    std::vector<std::tuple<std::string, std::string, double>>
+        relationships;  // each edge is {id, label, weight}
 
    public:
     Node(std::string id, std::string name, std::string type);

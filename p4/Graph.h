@@ -12,6 +12,7 @@ class Graph {
     std::vector<Node> nodes;
 
     void validateInput(std::string input);
+    Node *findNode(std::string id);
 
    public:
     Graph();

@@ -1,5 +1,6 @@
 #include "Node.h"
 
+#include <algorithm>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -41,4 +42,14 @@ void Node::addRelationship(std::string destinationId, std::string label,
     }
 }
 
-void Node::removeRelationship(std::string destinationId) {}
+void Node::removeRelationship(std::string destinationId) {
+    // remove relationship with destination id
+    this->relationships.erase(
+        std::remove_if(
+            this->relationships.begin(), this->relationships.end(),
+            [destinationId](
+                std::tuple<std::string, std::string, double> relationship) {
+                return std::get<0>(relationship) == destinationId;
+            }),
+        this->relationships.end());
+}

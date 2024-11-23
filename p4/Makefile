@@ -1,2 +1,2 @@
-all: ece250_socket.cpp main.cpp Graph.cpp Node.cpp
-	g++ -std=c++11 ece250_socket.cpp main.cpp Graph.cpp Node.cpp
+all: main.cpp Graph.cpp Node.cpp IllegalException.cpp
+	g++ -std=c++11 main.cpp Graph.cpp Node.cpp IllegalException.cpp
