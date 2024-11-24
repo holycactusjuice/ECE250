@@ -9,6 +9,7 @@
 
 #include "IllegalException.h"
 #include "Node.h"
+#include "PriorityQueue.h"
 
 Graph::Graph() : nodes({}) {}
 
@@ -197,6 +198,96 @@ std::string Graph::path(std::string id1, std::string id2) {
         validateInput(id2);
     } catch (IllegalException &e) {
         return "illegal argument";
+    }
+
+    // use Dijkstra's algorithm to find shortest path
+    // find node with id1
+    Node *sourceNode = findNode(id1);
+    // find node with id2
+    Node *destinationNode = findNode(id2);
+
+    // if source or destination not found, return failure
+    if (sourceNode == nullptr || destinationNode == nullptr) {
+        return "failure";
+    }
+
+    // set all nodes to unvisited and distance to infinity
+    for (Node &node : nodes) {
+        node.setVisited(false);
+        node.setDistance(INT_MAX);
+    }
+
+    // set source node distance to 0
+    sourceNode->setDistance(0);
+
+    PriorityQueue pq;
+
+    // insert source node into priority queue
+    pq.insert(sourceNode, sourceNode->getDistance());
+
+    // bool to check if destination node is reached
+    bool reached = false;
+
+    // loop until priority queue is empty
+    while (!pq.empty()) {
+        // get node with greatest distance
+        std::pair<Node *, double> minNode = pq.extractMax();
+        Node *currentNode = minNode.first;
+
+        // if current node is destination, break
+        if (currentNode == destinationNode) {
+            reached = true;
+            break;
+        }
+
+        // relax edges
+        for (const auto &relationship : currentNode->getRelationships()) {
+            // get neighbour node
+            Node *neighbourNode = std::get<0>(relationship);
+            // get edge weight
+            double edgeWeight = std::get<2>(relationship);
+            // calculate potential new distance
+            double newDistance = currentNode->getDistance() + edgeWeight;
+            // if new distance is less than neighbour node's distance, update it
+            if (newDistance < neighbourNode->getDistance()) {
+                neighbourNode->setDistance(newDistance);
+                neighbourNode->setParent(currentNode);
+                pq.updateKey(neighbourNode, newDistance);
+            }
+        }
+
+        // mark current node as visited
+        currentNode->setVisited(true);
+
+        // insert unvisited neighbours into priority queue
+        for (const auto &relationship : currentNode->getRelationships()) {
+            Node *neighbourNode = std::get<0>(relationship);
+            if (!neighbourNode->getVisited()) {
+                pq.insert(neighbourNode, neighbourNode->getDistance());
+            }
+        }
+    }
+
+    // if destination node is not reached, return failure
+    if (!reached) {
+        return "failure";
+    }
+
+    // get path from destination to source
+    std::vector<std::string> path;
+
+    Node *currentNode = destinationNode;
+
+    while (currentNode != nullptr) {
+        path.push_back(currentNode->getId());
+        currentNode = currentNode->getParent();
+    }
+
+    // reverse path
+    std::string result = "";
+
+    for (auto it = path.rbegin(); it != path.rend(); ++it) {
+        result += *it + " ";
     }
 
     return "success";

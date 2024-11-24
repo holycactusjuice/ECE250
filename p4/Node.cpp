@@ -1,12 +1,18 @@
 #include "Node.h"
 
 #include <algorithm>
+#include <climits>
 #include <string>
 #include <tuple>
 #include <vector>
 
 Node::Node(std::string id, std::string name, std::string type)
-    : id(id), name(name), type(type) {}
+    : id(id),
+      name(name),
+      type(type),
+      visited(false),
+      distance(INT_MAX),
+      parent(nullptr) {}
 
 std::string Node::getId() { return this->id; }
 
@@ -17,6 +23,18 @@ std::string Node::getType() { return this->type; }
 void Node::setName(std::string name) { this->name = name; }
 
 void Node::setType(std::string type) { this->type = type; }
+
+bool Node::getVisited() { return this->visited; }
+
+void Node::setVisited(bool visited) { this->visited = visited; }
+
+double Node::getDistance() { return this->distance; }
+
+void Node::setDistance(double distance) { this->distance = distance; }
+
+Node *Node::getParent() { return this->parent; }
+
+void Node::setParent(Node *parent) { this->parent = parent; }
 
 std::vector<std::tuple<Node *, std::string, double>> Node::getRelationships() {
     return this->relationships;
