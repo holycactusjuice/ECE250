@@ -10,8 +10,8 @@ Node::Node(std::string id, std::string name, std::string type)
     : id(id),
       name(name),
       type(type),
-      visited(false),
-      distance(INT_MAX),
+      queued(false),
+      distance(INT_MIN),
       parent(nullptr) {}
 
 std::string Node::getId() { return this->id; }
@@ -24,9 +24,9 @@ void Node::setName(std::string name) { this->name = name; }
 
 void Node::setType(std::string type) { this->type = type; }
 
-bool Node::getVisited() { return this->visited; }
+bool Node::getQueued() { return this->queued; }
 
-void Node::setVisited(bool visited) { this->visited = visited; }
+void Node::setQueued(bool queued) { this->queued = queued; }
 
 double Node::getDistance() { return this->distance; }
 

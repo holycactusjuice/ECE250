@@ -1,6 +1,7 @@
 #include "Graph.h"
 
 #include <algorithm>
+#include <climits>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -43,7 +44,7 @@ std::string Graph::load(std::string filename, std::string type) {
     while (std::getline(file, line)) {
         std::istringstream iss(line);
 
-        if (type == "relationship") {
+        if (type == "relationships") {
             // read inputs
             std::string sourceId;
             std::string label;
@@ -58,7 +59,7 @@ std::string Graph::load(std::string filename, std::string type) {
 
             // add relationship
             relationship(sourceId, label, destinationId, weight);
-        } else if (type == "entity") {
+        } else if (type == "entities") {
             // read inputs
             std::string id;
             std::string name;
@@ -213,8 +214,8 @@ std::string Graph::path(std::string id1, std::string id2) {
 
     // set all nodes to unvisited and distance to infinity
     for (Node &node : nodes) {
-        node.setVisited(false);
-        node.setDistance(INT_MAX);
+        node.setQueued(false);
+        node.setDistance(INT_MIN);
     }
 
     // set source node distance to 0
@@ -223,7 +224,10 @@ std::string Graph::path(std::string id1, std::string id2) {
     PriorityQueue pq;
 
     // insert source node into priority queue
-    pq.insert(sourceNode, sourceNode->getDistance());
+    pq.push(sourceNode);
+    sourceNode->setQueued(true);
+
+    pq.print();
 
     // bool to check if destination node is reached
     bool reached = false;
@@ -231,11 +235,11 @@ std::string Graph::path(std::string id1, std::string id2) {
     // loop until priority queue is empty
     while (!pq.empty()) {
         // get node with greatest distance
-        std::pair<Node *, double> minNode = pq.extractMax();
-        Node *currentNode = minNode.first;
+        Node *currentNode = pq.extractMax();
+        pq.print();
 
         // if current node is destination, break
-        if (currentNode == destinationNode) {
+        if (currentNode->getId() == destinationNode->getId()) {
             reached = true;
             break;
         }
@@ -248,22 +252,21 @@ std::string Graph::path(std::string id1, std::string id2) {
             double edgeWeight = std::get<2>(relationship);
             // calculate potential new distance
             double newDistance = currentNode->getDistance() + edgeWeight;
-            // if new distance is less than neighbour node's distance, update it
-            if (newDistance < neighbourNode->getDistance()) {
+            // if new distance is GREATER than neighbour node's distance, update
+            if (newDistance > neighbourNode->getDistance()) {
                 neighbourNode->setDistance(newDistance);
                 neighbourNode->setParent(currentNode);
-                pq.updateKey(neighbourNode, newDistance);
+                // update priority queue
+                std::cout << "checkpoint" << std::endl;
+                pq.heapifyUp(pq.size() - 1);
+                std::cout << "checkpoint" << std::endl;
             }
-        }
-
-        // mark current node as visited
-        currentNode->setVisited(true);
-
-        // insert unvisited neighbours into priority queue
-        for (const auto &relationship : currentNode->getRelationships()) {
-            Node *neighbourNode = std::get<0>(relationship);
-            if (!neighbourNode->getVisited()) {
-                pq.insert(neighbourNode, neighbourNode->getDistance());
+            // if neighbour node is not in priority queue, insert
+            if (!neighbourNode->getQueued()) {
+                std::cout << "pushing" << std::endl;
+                pq.push(neighbourNode);
+                neighbourNode->setQueued(true);
+                pq.print();
             }
         }
     }
@@ -272,6 +275,8 @@ std::string Graph::path(std::string id1, std::string id2) {
     if (!reached) {
         return "failure";
     }
+
+    sourceNode->setParent(nullptr);
 
     // get path from destination to source
     std::vector<std::string> path;
@@ -290,7 +295,10 @@ std::string Graph::path(std::string id1, std::string id2) {
         result += *it + " ";
     }
 
-    return "success";
+    // add total distance
+    result += std::to_string(destinationNode->getDistance());
+
+    return result;
 }
 
 std::string Graph::findAll(std::string fieldType, std::string fieldString) {

@@ -10,20 +10,18 @@
 
 class PriorityQueue {
    private:
-    std::vector<std::pair<Node*, double>> heap;
-
-    void heapifyUp(int index);
-    void heapifyDown(int index);
+    std::vector<Node*> heap;
 
    public:
+    void heapifyUp(int index);
+    void heapifyDown(int index);
     PriorityQueue();
-    ~PriorityQueue();
-
-    void push(Node*, double distance);
+    void push(Node* node);
     void pop();
-    std::pair<Node*, double> extractMax();
-    void updateKey(Node*, double distance);
+    int size();
+    Node* extractMax();
     bool empty();
+    void print();
 };
 
 #endif

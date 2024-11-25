@@ -13,7 +13,7 @@ class Node {
     std::string type;
     std::vector<std::tuple<Node*, std::string, double>>
         relationships;  // each edge is {node, label, weight}
-    bool visited;
+    bool queued;
     double distance;
     Node* parent;
 
@@ -28,8 +28,8 @@ class Node {
     std::string getType();
     void setName(std::string name);
     void setType(std::string type);
-    bool getVisited();
-    void setVisited(bool visited);
+    bool getQueued();
+    void setQueued(bool queued);
     double getDistance();
     void setDistance(double distance);
     Node* getParent();
