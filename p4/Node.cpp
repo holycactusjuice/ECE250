@@ -79,9 +79,9 @@ void Node::removeRelationship(std::string destinationId) {
             this->relationships.begin(), this->relationships.end(),
             // lambda function with destinationId as input
             [&destinationId](
-                std::tuple<std::string, std::string, double> &relationship) {
+                std::tuple<Node *, std::string, double> &relationship) {
                 // return true if destinationId found
-                return std::get<0>(relationship) == destinationId;
+                return std::get<0>(relationship)->getId() == destinationId;
             }),
         this->relationships.end());
 }
