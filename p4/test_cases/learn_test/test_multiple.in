@@ -1,5 +1,5 @@
-LOAD simple_entities.txt entities
-LOAD simple_relationships.txt relationships
+LOAD test_cases/learn_test/simple_entities.txt entities
+LOAD test_cases/learn_test/simple_relationships.txt relationships
 PRINT 34a
 PATH 34a 341
 PATH 34a 234

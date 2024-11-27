@@ -1,4 +1,4 @@
 LOAD test_cases/entities1.txt entities
 LOAD test_cases/relationships1.txt relationships
-PATH pyuan bli
+PATH bli pyuan
 EXIT

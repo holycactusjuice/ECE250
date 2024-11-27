@@ -194,6 +194,7 @@ std::string Graph::deleteNode(std::string id) {
 }
 
 std::string Graph::path(std::string id1, std::string id2) {
+    // validate inputs
     try {
         validateInput(id1);
         validateInput(id2);
@@ -201,7 +202,8 @@ std::string Graph::path(std::string id1, std::string id2) {
         return "illegal argument";
     }
 
-    // use Dijkstra's algorithm to find shortest path
+    // we will use Dijkstra's algorithm to find the path
+
     // find node with id1
     Node *sourceNode = findNode(id1);
     // find node with id2
@@ -236,6 +238,7 @@ std::string Graph::path(std::string id1, std::string id2) {
     while (!pq.empty()) {
         // get node with greatest distance
         Node *currentNode = pq.extractMax();
+        std::cout << "extracted " << currentNode->getId() << std::endl;
         pq.print();
 
         // if current node is destination, break
@@ -255,15 +258,18 @@ std::string Graph::path(std::string id1, std::string id2) {
             // if new distance is GREATER than neighbour node's distance, update
             if (newDistance > neighbourNode->getDistance()) {
                 neighbourNode->setDistance(newDistance);
-                neighbourNode->setParent(currentNode);
+                std::cout << "making " << currentNode->getId() << " parent of "
+                          << neighbourNode->getId() << std::endl;
+                // update parent if current node is not visited
+                if (!neighbourNode->getQueued()) {
+                    neighbourNode->setParent(currentNode);
+                }
                 // update priority queue
-                std::cout << "checkpoint" << std::endl;
                 pq.heapifyUp(pq.size() - 1);
-                std::cout << "checkpoint" << std::endl;
             }
             // if neighbour node is not in priority queue, insert
             if (!neighbourNode->getQueued()) {
-                std::cout << "pushing" << std::endl;
+                std::cout << "pushing " << neighbourNode->getId() << std::endl;
                 pq.push(neighbourNode);
                 neighbourNode->setQueued(true);
                 pq.print();
@@ -285,14 +291,15 @@ std::string Graph::path(std::string id1, std::string id2) {
 
     while (currentNode != nullptr) {
         path.push_back(currentNode->getId());
+        std::cout << "adding " << currentNode->getId() << std::endl;
         currentNode = currentNode->getParent();
     }
 
     // reverse path
     std::string result = "";
 
-    for (auto it = path.rbegin(); it != path.rend(); ++it) {
-        result += *it + " ";
+    for (int i = path.size() - 1; i >= 0; i--) {
+        result += path[i] + " ";
     }
 
     // add total distance
