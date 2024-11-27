@@ -13,6 +13,9 @@ class Graph {
 
     void validateInput(std::string input);
     Node *findNode(std::string id);
+    void dfs(Node *current,
+             const std::vector<std::tuple<Node *, Node *, double>> &tree,
+             Node *&maxNode, double currentWeight);
 
    public:
     Graph();

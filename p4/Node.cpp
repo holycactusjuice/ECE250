@@ -28,6 +28,10 @@ bool Node::getQueued() { return this->queued; }
 
 void Node::setQueued(bool queued) { this->queued = queued; }
 
+bool Node::getProcessed() { return this->processed; }
+
+void Node::setProcessed(bool processed) { this->processed = processed; }
+
 double Node::getDistance() { return this->distance; }
 
 void Node::setDistance(double distance) { this->distance = distance; }

@@ -260,8 +260,10 @@ std::string Graph::path(std::string id1, std::string id2) {
                 neighbourNode->setDistance(newDistance);
                 std::cout << "making " << currentNode->getId() << " parent of "
                           << neighbourNode->getId() << std::endl;
-                // update parent if current node is not visited
-                if (!neighbourNode->getQueued()) {
+                // update parent if current node is not processed
+                // because we don't want to update parent of a node that has
+                // already been added to the path
+                if (!neighbourNode->getProcessed()) {
                     neighbourNode->setParent(currentNode);
                 }
                 // update priority queue
@@ -275,6 +277,8 @@ std::string Graph::path(std::string id1, std::string id2) {
                 pq.print();
             }
         }
+
+        currentNode->setProcessed(true);
     }
 
     // if destination node is not reached, return failure
@@ -308,6 +312,136 @@ std::string Graph::path(std::string id1, std::string id2) {
     return result;
 }
 
+std::string Graph::highest() {
+    // we will first use Prim's algorithm to find the max spanning tree
+    // then we will run 2 DFSs to find the diameter of the tree
+
+    // set all nodes to unvisited and distance to infinity
+    for (Node &node : nodes) {
+        node.setQueued(false);
+        node.setDistance(INT_MIN);
+        node.setParent(nullptr);
+    }
+
+    // start with first node
+    Node *startNode = &nodes[0];
+    startNode->setDistance(0);
+
+    PriorityQueue pq;
+
+    // insert start node into priority queue
+    pq.push(startNode);
+    startNode->setQueued(true);
+
+    // loop until priority queue is empty
+    while (!pq.empty()) {
+        // get node with greatest distance
+        Node *currentNode = pq.extractMax();
+
+        // if node has already been added to the tree, skip
+        if (currentNode->getParent() != nullptr) {
+            continue;
+        }
+
+        // relax edges
+        for (const auto &relationship : currentNode->getRelationships()) {
+            // get neighbour node
+            Node *neighbourNode = std::get<0>(relationship);
+            // get edge weight
+            double edgeWeight = std::get<2>(relationship);
+            // calculate potential new distance
+            double newDistance = edgeWeight;
+            // if new distance is GREATER than neighbour node's distance, update
+            if (newDistance > neighbourNode->getDistance()) {
+                neighbourNode->setDistance(newDistance);
+                if (!neighbourNode->getProcessed()) {
+                    neighbourNode->setParent(currentNode);
+                }
+                // update priority queue
+                pq.heapifyUp(pq.size() - 1);
+            }
+            // if neighbour node is not in priority queue, insert
+            if (!neighbourNode->getQueued()) {
+                pq.push(neighbourNode);
+                neighbourNode->setQueued(true);
+            }
+        }
+
+        currentNode->setProcessed(true);
+    }
+
+    // build max spanning tree
+    std::vector<std::tuple<Node *, Node *, double>> maxSpanningTree;
+    for (Node &node : nodes) {
+        if (node.getParent() != nullptr) {
+            maxSpanningTree.push_back(
+                std::make_tuple(&node, node.getParent(), node.getDistance()));
+        }
+    }
+
+    // start from any node for first dfs
+    // we will take the first node in the max spanning tree
+    Node *curr = std::get<0>(maxSpanningTree[0]);
+
+    // endpoint will be the node with the greatest distance from start node
+    Node *end = curr;
+
+    // set all nodes to unvisited and distance to infinity
+    for (Node &node : nodes) {
+        node.setQueued(false);
+        node.setDistance(INT_MIN);
+        node.setParent(nullptr);
+        node.setProcessed(false);
+    }
+
+    // set start node distance to 0
+    curr->setDistance(0);
+
+    // run dfs
+    dfs(curr, maxSpanningTree, end, 0);
+
+    // start from endpoint for second dfs
+    curr = end;
+
+    // set all nodes to unvisited and distance to infinity
+
+    for (Node &node : nodes) {
+        node.setQueued(false);
+        node.setDistance(INT_MIN);
+        node.setParent(nullptr);
+        node.setProcessed(false);
+    }
+
+    // set start node distance to 0
+    curr->setDistance(0);
+
+    // run dfs
+    dfs(curr, maxSpanningTree, end, 0);
+
+    // get path from destination to source
+
+    std::vector<std::string> path;
+
+    Node *currentNode = end;
+
+    while (currentNode != nullptr) {
+        path.push_back(currentNode->getId());
+        currentNode = currentNode->getParent();
+    }
+
+    // reverse path
+    std::string result = "";
+
+    for (int i = path.size() - 1; i >= 0; i--) {
+        result += path[i] + " ";
+    }
+
+    // add total distance
+    result += std::to_string(end->getDistance());
+
+    return result;
+}
+
 std::string Graph::findAll(std::string fieldType, std::string fieldString) {
     try {
         validateInput(fieldType);
@@ -316,7 +450,47 @@ std::string Graph::findAll(std::string fieldType, std::string fieldString) {
         return "illegal argument";
     }
 
-    return "success";
+    // find all nodes with fieldString in fieldType
+
+    std::string result = "";
+
+    for (Node &node : nodes) {
+        if ((fieldType == "name" && node.getName() == fieldString) ||
+            (fieldType == "type" && node.getType() == fieldString)) {
+            result += node.getId() + " ";
+        }
+    }
+
+    // remove trailing space
+    if (!result.empty()) {
+        result.pop_back();
+    }
+
+    return (result.empty()) ? "failure" : result;
 }
 
-std::string Graph::highest() { return "success"; }
+void Graph::dfs(Node *current,
+                const std::vector<std::tuple<Node *, Node *, double>> &tree,
+                Node *&maxNode, double currentWeight) {
+    current->setProcessed(true);
+    current->setDistance(currentWeight);
+
+    if (currentWeight > maxNode->getDistance()) {
+        maxNode->setDistance(currentWeight);
+        maxNode = current;
+    }
+
+    for (const auto &edge : tree) {
+        Node *source = std::get<0>(edge);
+        Node *dest = std::get<1>(edge);
+        double weight = std::get<2>(edge);
+
+        Node *neighbour = (source == current) ? dest
+                          : (dest == current) ? source
+                                              : nullptr;
+
+        if (neighbour && neighbour->getProcessed()) {
+            dfs(neighbour, tree, maxNode, currentWeight + weight);
+        }
+    }
+}

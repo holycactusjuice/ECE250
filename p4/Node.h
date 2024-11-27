@@ -11,15 +11,16 @@ class Node {
     std::string id;
     std::string name;
     std::string type;
-    std::vector<std::tuple<Node*, std::string, double>>
+    std::vector<std::tuple<Node *, std::string, double>>
         relationships;  // each edge is {node, label, weight}
     bool queued;
+    bool processed;
     double distance;
-    Node* parent;
+    Node *parent;
 
     bool relationshipExists(std::string destinationId);
 
-   public:
+      public:
     Node(std::string id, std::string name, std::string type);
 
     // getters and setters for private variables
@@ -30,13 +31,15 @@ class Node {
     void setType(std::string type);
     bool getQueued();
     void setQueued(bool queued);
+    bool getProcessed();
+    void setProcessed(bool processed);
     double getDistance();
     void setDistance(double distance);
-    Node* getParent();
-    void setParent(Node* parent);
-    std::vector<std::tuple<Node*, std::string, double>> getRelationships();
+    Node *getParent();
+    void setParent(Node *parent);
+    std::vector<std::tuple<Node *, std::string, double>> getRelationships();
 
-    void addRelationship(Node* destinationNode, std::string label,
+    void addRelationship(Node *destinationNode, std::string label,
                          double weight);
     void updateRelationship(std::string destinationId, std::string label,
                             double weight);
