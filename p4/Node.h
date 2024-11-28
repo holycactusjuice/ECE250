@@ -20,7 +20,7 @@ class Node {
 
     bool relationshipExists(std::string destinationId);
 
-      public:
+   public:
     Node(std::string id, std::string name, std::string type);
 
     // getters and setters for private variables
@@ -41,8 +41,6 @@ class Node {
 
     void addRelationship(Node *destinationNode, std::string label,
                          double weight);
-    void updateRelationship(std::string destinationId, std::string label,
-                            double weight);
     void removeRelationship(std::string destinationId);
 };
 

@@ -1,0 +1,7 @@
+ENTITY 1 John Person
+ENTITY 2 Mary Student
+RELATIONSHIP 1 friends 2 5.0
+PATH 1 3
+PATH 4 2
+PATH 1@2 2
+EXIT

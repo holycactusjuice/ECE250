@@ -1,0 +1,9 @@
+ENTITY 1 John Person
+ENTITY 2 Mary Student
+ENTITY 3 Bob Teacher
+RELATIONSHIP 1 friends 2 5.0
+RELATIONSHIP 2 knows 3 7.0
+DELETE 2
+PRINT 1
+PRINT 3
+EXIT

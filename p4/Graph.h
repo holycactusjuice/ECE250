@@ -9,7 +9,7 @@
 
 class Graph {
    private:
-    std::vector<Node> nodes;
+    std::vector<Node *> nodes;
 
     void validateInput(std::string input);
     Node *findNode(std::string id);

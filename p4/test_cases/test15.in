@@ -1,0 +1,11 @@
+ENTITY 1 John Person
+ENTITY 2 Mary Student
+ENTITY 3 Bob Teacher
+ENTITY 4 Alice Doctor
+RELATIONSHIP 1 friends 2 5.0
+RELATIONSHIP 2 knows 3 7.0
+RELATIONSHIP 3 meets 4 8.0
+RELATIONSHIP 1 works 4 3.0
+PATH 1 4
+PATH 4 1
+EXIT

@@ -23,16 +23,17 @@ void Graph::validateInput(std::string input) {
 }
 
 Node *Graph::findNode(std::string id) {
-    // find node with id
-    auto it = std::find_if(nodes.begin(), nodes.end(),
-                           [&id](Node &node) { return node.getId() == id; });
+    Node *node = nullptr;
 
-    // if node not found, return nullptr
-    if (it == nodes.end()) {
-        return nullptr;
+    // find node with id
+    for (Node *n : nodes) {
+        if (n->getId() == id) {
+            node = n;
+            break;
+        }
     }
 
-    return &(*it);
+    return node;
 }
 
 std::string Graph::load(std::string filename, std::string type) {
@@ -87,11 +88,11 @@ std::string Graph::relationship(std::string sourceId, std::string label,
     Node *sourceNode = nullptr;
     Node *destinationNode = nullptr;
     // loop through nodes to find source and destination
-    for (Node &node : nodes) {
-        if (node.getId() == sourceId) {
-            sourceNode = &node;
-        } else if (node.getId() == destinationId) {
-            destinationNode = &node;
+    for (Node *node : nodes) {
+        if (node->getId() == sourceId) {
+            sourceNode = node;
+        } else if (node->getId() == destinationId) {
+            destinationNode = node;
         }
     }
 
@@ -111,17 +112,17 @@ std::string Graph::relationship(std::string sourceId, std::string label,
 std::string Graph::entity(std::string id, std::string name, std::string type) {
     bool exists = false;
     // check if node already exists
-    for (Node &node : nodes) {
-        if (node.getId() == id) {
-            node.setName(name);
-            node.setType(type);
+    for (Node *node : nodes) {
+        if (node->getId() == id) {
+            node->setName(name);
+            node->setType(type);
             exists = true;
         }
     }
 
     // add node
     if (!exists) {
-        nodes.push_back(Node(id, name, type));
+        nodes.push_back(new Node(id, name, type));
     }
 
     return "success";
@@ -185,10 +186,13 @@ std::string Graph::deleteNode(std::string id) {
     }
 
     // remove node
-    nodes.erase(
-        std::remove_if(nodes.begin(), nodes.end(),
-                       [&id](Node &node) { return node.getId() == id; }),
-        nodes.end());
+    for (auto it = nodes.begin(); it != nodes.end(); it++) {
+        if ((*it)->getId() == id) {
+            delete *it;
+            nodes.erase(it);
+            break;
+        }
+    }
 
     return "success";
 }
@@ -215,9 +219,11 @@ std::string Graph::path(std::string id1, std::string id2) {
     }
 
     // set all nodes to unvisited and distance to infinity
-    for (Node &node : nodes) {
-        node.setQueued(false);
-        node.setDistance(INT_MIN);
+    for (Node *node : nodes) {
+        node->setQueued(false);
+        node->setDistance(INT_MIN);
+        node->setParent(nullptr);
+        node->setProcessed(false);
     }
 
     // set source node distance to 0
@@ -308,17 +314,17 @@ std::string Graph::highest() {
     // then we will run 2 DFSs to find the diameter of the tree
 
     // set all nodes to unvisited and distance to infinity
-    for (Node &node : nodes) {
-        node.setQueued(false);
-        node.setDistance(INT_MIN);
-        node.setParent(nullptr);
-        node.setProcessed(false);
+    for (Node *node : nodes) {
+        node->setQueued(false);
+        node->setDistance(INT_MIN);
+        node->setParent(nullptr);
+        node->setProcessed(false);
     }
 
     std::vector<std::tuple<Node *, Node *, double>> maxSpanningTree;
 
     // start with first node
-    Node *startNode = &nodes[0];
+    Node *startNode = nodes[0];
     startNode->setDistance(0);
 
     PriorityQueue pq;
@@ -381,11 +387,11 @@ std::string Graph::highest() {
     Node *end = curr;
 
     // set all nodes to unvisited and distance to infinity
-    for (Node &node : nodes) {
-        node.setQueued(false);
-        node.setDistance(INT_MIN);
-        node.setParent(nullptr);
-        node.setProcessed(false);
+    for (Node *node : nodes) {
+        node->setQueued(false);
+        node->setDistance(INT_MIN);
+        node->setParent(nullptr);
+        node->setProcessed(false);
     }
 
     // set start node distance to 0
@@ -399,11 +405,11 @@ std::string Graph::highest() {
 
     // set all nodes to unvisited and distance to infinity
 
-    for (Node &node : nodes) {
-        node.setQueued(false);
-        node.setDistance(INT_MIN);
-        node.setParent(nullptr);
-        node.setProcessed(false);
+    for (Node *node : nodes) {
+        node->setQueued(false);
+        node->setDistance(INT_MIN);
+        node->setParent(nullptr);
+        node->setProcessed(false);
     }
 
     // set start node distance to 0
@@ -450,10 +456,10 @@ std::string Graph::findAll(std::string fieldType, std::string fieldString) {
 
     std::string result = "";
 
-    for (Node &node : nodes) {
-        if ((fieldType == "name" && node.getName() == fieldString) ||
-            (fieldType == "type" && node.getType() == fieldString)) {
-            result += node.getId() + " ";
+    for (Node *node : nodes) {
+        if ((fieldType == "name" && node->getName() == fieldString) ||
+            (fieldType == "type" && node->getType() == fieldString)) {
+            result += node->getId() + " ";
         }
     }
 
