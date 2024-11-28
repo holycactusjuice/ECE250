@@ -1,4 +1,7 @@
-LOAD test_cases/entities1.txt entities
-LOAD test_cases/relationships1.txt relationships
-PATH bli pyuan
+ENTITY 1 John Person
+ENTITY 2 Mary Student
+RELATIONSHIP 1 friends 2 5.0
+RELATIONSHIP 2 study_with 1 6.0
+RELATIONSHIP 1 friends 2 10.0
+RELATIONSHIP 4 likes 1 3.0
 EXIT

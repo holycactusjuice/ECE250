@@ -1,0 +1,7 @@
+ENTITY 1 John Person
+RELATIONSHIP 1 friends 2 5.0
+ENTITY 2 Mary Student
+RELATIONSHIP 2 friends 1 5.0
+ENTITY 1 Johnny Employee
+RELATIONSHIP 1 friends 2 7.0
+EXIT
