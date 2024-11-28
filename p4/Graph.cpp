@@ -229,8 +229,6 @@ std::string Graph::path(std::string id1, std::string id2) {
     pq.push(sourceNode);
     sourceNode->setQueued(true);
 
-    pq.print();
-
     // bool to check if destination node is reached
     bool reached = false;
 
@@ -238,8 +236,6 @@ std::string Graph::path(std::string id1, std::string id2) {
     while (!pq.empty()) {
         // get node with greatest distance
         Node *currentNode = pq.extractMax();
-        std::cout << "extracted " << currentNode->getId() << std::endl;
-        pq.print();
 
         // if current node is destination, break
         if (currentNode->getId() == destinationNode->getId()) {
@@ -258,8 +254,6 @@ std::string Graph::path(std::string id1, std::string id2) {
             // if new distance is GREATER than neighbour node's distance, update
             if (newDistance > neighbourNode->getDistance()) {
                 neighbourNode->setDistance(newDistance);
-                std::cout << "making " << currentNode->getId() << " parent of "
-                          << neighbourNode->getId() << std::endl;
                 // update parent if current node is not processed
                 // because we don't want to update parent of a node that has
                 // already been added to the path
@@ -271,10 +265,8 @@ std::string Graph::path(std::string id1, std::string id2) {
             }
             // if neighbour node is not in priority queue, insert
             if (!neighbourNode->getQueued()) {
-                std::cout << "pushing " << neighbourNode->getId() << std::endl;
                 pq.push(neighbourNode);
                 neighbourNode->setQueued(true);
-                pq.print();
             }
         }
 
@@ -295,7 +287,6 @@ std::string Graph::path(std::string id1, std::string id2) {
 
     while (currentNode != nullptr) {
         path.push_back(currentNode->getId());
-        std::cout << "adding " << currentNode->getId() << std::endl;
         currentNode = currentNode->getParent();
     }
 
@@ -321,7 +312,10 @@ std::string Graph::highest() {
         node.setQueued(false);
         node.setDistance(INT_MIN);
         node.setParent(nullptr);
+        node.setProcessed(false);
     }
+
+    std::vector<std::tuple<Node *, Node *, double>> maxSpanningTree;
 
     // start with first node
     Node *startNode = &nodes[0];
@@ -339,7 +333,7 @@ std::string Graph::highest() {
         Node *currentNode = pq.extractMax();
 
         // if node has already been added to the tree, skip
-        if (currentNode->getParent() != nullptr) {
+        if (currentNode->getProcessed()) {
             continue;
         }
 
@@ -355,7 +349,9 @@ std::string Graph::highest() {
             if (newDistance > neighbourNode->getDistance()) {
                 neighbourNode->setDistance(newDistance);
                 if (!neighbourNode->getProcessed()) {
-                    neighbourNode->setParent(currentNode);
+                    // add edge to max spanning tree
+                    maxSpanningTree.push_back(
+                        {currentNode, neighbourNode, edgeWeight});
                 }
                 // update priority queue
                 pq.heapifyUp(pq.size() - 1);
@@ -370,14 +366,12 @@ std::string Graph::highest() {
         currentNode->setProcessed(true);
     }
 
-    // build max spanning tree
-    std::vector<std::tuple<Node *, Node *, double>> maxSpanningTree;
-    for (Node &node : nodes) {
-        if (node.getParent() != nullptr) {
-            maxSpanningTree.push_back(
-                std::make_tuple(&node, node.getParent(), node.getDistance()));
-        }
-    }
+    // // print max spanning tree
+    // for (const auto &edge : maxSpanningTree) {
+    //     std::cout << std::get<0>(edge)->getId() << " is connected to "
+    //               << std::get<1>(edge)->getId() << " with weight "
+    //               << std::get<2>(edge) << std::endl;
+    // }
 
     // start from any node for first dfs
     // we will take the first node in the max spanning tree
@@ -425,16 +419,18 @@ std::string Graph::highest() {
     Node *currentNode = end;
 
     while (currentNode != nullptr) {
+        // std::cout << currentNode->getId() << " has weight "
+        //           << currentNode->getDistance() << std::endl;
         path.push_back(currentNode->getId());
+
         currentNode = currentNode->getParent();
     }
 
     // reverse path
     std::string result = "";
 
-    for (int i = path.size() - 1; i >= 0; i--) {
-        result += path[i] + " ";
-    }
+    // add start and end nodes
+    result += path[path.size() - 1] + " " + path[0] + " ";
 
     // add total distance
     result += std::to_string(end->getDistance());
@@ -485,11 +481,13 @@ void Graph::dfs(Node *current,
         Node *dest = std::get<1>(edge);
         double weight = std::get<2>(edge);
 
-        Node *neighbour = (source == current) ? dest
-                          : (dest == current) ? source
-                                              : nullptr;
+        Node *neighbour = (source->getId() == current->getId()) ? dest
+                          : (dest->getId() == current->getId()) ? source
+                                                                : nullptr;
 
-        if (neighbour && neighbour->getProcessed()) {
+        if (neighbour && !neighbour->getProcessed()) {
+            // update parent
+            neighbour->setParent(current);
             dfs(neighbour, tree, maxNode, currentWeight + weight);
         }
     }
