@@ -1,0 +1,7 @@
+ENTITY 1 John Person
+ENTITY 2 Mary Student
+RELATIONSHIP 1 friends 2 5.0
+PRINT 3
+PRINT 1@2
+PRINT abc
+EXIT
