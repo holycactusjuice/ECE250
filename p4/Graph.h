@@ -16,6 +16,8 @@ class Graph {
     void dfs(Node *current,
              const std::vector<std::tuple<Node *, Node *, double>> &tree,
              Node *&maxNode, double currentWeight);
+    std::vector<std::tuple<Node *, Node *, double>> buildMaxSpanningTree(
+        Node *startNode);
 
    public:
     Graph();

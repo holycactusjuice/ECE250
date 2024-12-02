@@ -1,0 +1,4 @@
+ENTITY A1 name1 type1
+ENTITY A2 name2 type1
+HIGHEST
+EXIT

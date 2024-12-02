@@ -321,10 +321,110 @@ std::string Graph::highest() {
         node->setProcessed(false);
     }
 
+    std::vector<Node *> processedNodes;
+    std::string result = "";
+    double maxDistance = INT_MIN;
+
+    while (processedNodes.size() < nodes.size()) {
+        Node *nextNode = nullptr;
+        for (Node *node : nodes) {
+            if (std::find(processedNodes.begin(), processedNodes.end(), node) ==
+                processedNodes.end()) {
+                nextNode = node;
+                break;
+            }
+        }
+
+        std::vector<std::tuple<Node *, Node *, double>> maxSpanningTree =
+            buildMaxSpanningTree(nextNode);
+        if (maxSpanningTree.size() == 0) {
+            processedNodes.push_back(nextNode);
+            continue;
+        }
+        // // print max spanning tree
+        // for (const auto &edge : maxSpanningTree) {
+        //     std::cout << std::get<0>(edge)->getId() << " is connected to "
+        //               << std::get<1>(edge)->getId() << " with weight "
+        //               << std::get<2>(edge) << std::endl;
+        // }
+
+        // start from any node for first dfs
+        // we will take the first node in the max spanning tree
+        Node *curr = std::get<0>(maxSpanningTree[0]);
+
+        // endpoint will be the node with the greatest distance from start node
+        Node *end = curr;
+
+        // set all nodes to unvisited and distance to infinity
+        for (Node *node : nodes) {
+            node->setQueued(false);
+            node->setDistance(INT_MIN);
+            node->setParent(nullptr);
+            node->setProcessed(false);
+        }
+
+        // set start node distance to 0
+        curr->setDistance(0);
+
+        // run dfs
+        dfs(curr, maxSpanningTree, end, 0);
+
+        // start from endpoint for second dfs
+        curr = end;
+
+        // set all nodes to unvisited and distance to infinity
+
+        for (Node *node : nodes) {
+            node->setQueued(false);
+            node->setDistance(INT_MIN);
+            node->setParent(nullptr);
+            node->setProcessed(false);
+        }
+
+        // set start node distance to 0
+        curr->setDistance(0);
+
+        // run dfs
+        dfs(curr, maxSpanningTree, end, 0);
+
+        // get path from destination to source
+
+        std::vector<std::string> path;
+
+        Node *currentNode = end;
+
+        while (currentNode != nullptr) {
+            // std::cout << currentNode->getId() << " has weight "
+            //           << currentNode->getDistance() << std::endl;
+            path.push_back(currentNode->getId());
+            currentNode = currentNode->getParent();
+            processedNodes.push_back(currentNode);
+        }
+
+        if (end->getDistance() > maxDistance) {
+            maxDistance = end->getDistance();
+            // reverse path
+            result = "";
+
+            // add start and end nodes
+            result += path[path.size() - 1] + " " + path[0] + " ";
+
+            // add total distance
+            result += std::to_string(end->getDistance());
+        }
+    }
+
+    return result == "" ? "failure" : result;
+}
+std::vector<std::tuple<Node *, Node *, double>> Graph::buildMaxSpanningTree(
+    Node *startNode) {
+    if (startNode->getRelationships().empty()) {
+        return {};
+    }
+
     std::vector<std::tuple<Node *, Node *, double>> maxSpanningTree;
 
     // start with first node
-    Node *startNode = nodes[0];
     startNode->setDistance(0);
 
     PriorityQueue pq;
@@ -351,7 +451,8 @@ std::string Graph::highest() {
             double edgeWeight = std::get<2>(relationship);
             // calculate potential new distance
             double newDistance = edgeWeight;
-            // if new distance is GREATER than neighbour node's distance, update
+            // if new distance is GREATER than neighbour node's distance,
+            // update
             if (newDistance > neighbourNode->getDistance()) {
                 neighbourNode->setDistance(newDistance);
                 if (!neighbourNode->getProcessed()) {
@@ -372,86 +473,10 @@ std::string Graph::highest() {
         currentNode->setProcessed(true);
     }
 
-    // // print max spanning tree
-    // for (const auto &edge : maxSpanningTree) {
-    //     std::cout << std::get<0>(edge)->getId() << " is connected to "
-    //               << std::get<1>(edge)->getId() << " with weight "
-    //               << std::get<2>(edge) << std::endl;
-    // }
-
-    // start from any node for first dfs
-    // we will take the first node in the max spanning tree
-    Node *curr = std::get<0>(maxSpanningTree[0]);
-
-    // endpoint will be the node with the greatest distance from start node
-    Node *end = curr;
-
-    // set all nodes to unvisited and distance to infinity
-    for (Node *node : nodes) {
-        node->setQueued(false);
-        node->setDistance(INT_MIN);
-        node->setParent(nullptr);
-        node->setProcessed(false);
-    }
-
-    // set start node distance to 0
-    curr->setDistance(0);
-
-    // run dfs
-    dfs(curr, maxSpanningTree, end, 0);
-
-    // start from endpoint for second dfs
-    curr = end;
-
-    // set all nodes to unvisited and distance to infinity
-
-    for (Node *node : nodes) {
-        node->setQueued(false);
-        node->setDistance(INT_MIN);
-        node->setParent(nullptr);
-        node->setProcessed(false);
-    }
-
-    // set start node distance to 0
-    curr->setDistance(0);
-
-    // run dfs
-    dfs(curr, maxSpanningTree, end, 0);
-
-    // get path from destination to source
-
-    std::vector<std::string> path;
-
-    Node *currentNode = end;
-
-    while (currentNode != nullptr) {
-        // std::cout << currentNode->getId() << " has weight "
-        //           << currentNode->getDistance() << std::endl;
-        path.push_back(currentNode->getId());
-
-        currentNode = currentNode->getParent();
-    }
-
-    // reverse path
-    std::string result = "";
-
-    // add start and end nodes
-    result += path[path.size() - 1] + " " + path[0] + " ";
-
-    // add total distance
-    result += std::to_string(end->getDistance());
-
-    return result;
+    return maxSpanningTree;
 }
 
 std::string Graph::findAll(std::string fieldType, std::string fieldString) {
-    try {
-        validateInput(fieldType);
-        validateInput(fieldString);
-    } catch (IllegalException &e) {
-        return "illegal argument";
-    }
-
     // find all nodes with fieldString in fieldType
 
     std::string result = "";
